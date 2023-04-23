@@ -160,7 +160,7 @@ while (time.time() - start_time < flight_time * 60):
                 print("Raund : "+ str(raund))
 
             if raund ==3:
-                if (time.time()-raund_time >= diff_between_raunds):
+                if (time.time()-raund_time >= 3*diff_between_raunds/2):
                     print("Raund = 3, dropping balls")
                     servo_control(1, 1, 33, 80, 5, 12.5)
                     servo_control(1, 1, 32, 35, 12.5, 5)
