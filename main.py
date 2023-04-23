@@ -149,35 +149,37 @@ each_tour = 0
 
 while (time.time() - start_time < flight_time * 60):
     try:
-        if (bool_raunt and get_dist(start_x,start_y,plane.location.global_frame.lat,plane.location.global_frame.lon)<=start_circle):
-            raunt+=1
-            tour_timer = time.time()
-            print(str(raunt))
-            if raunt==1:
-                second_tour = time.time()
-
-            elif raunt == 2:
-                each_tour = time.time()-second_tour
-
-
-            elif raunt == 5:
-                current_time = time.time()
-                while time.time()-current_time<=(9*each_tour/20):
-                    print("Going through the target")
-
-                for i in range(5):
-                    servo_control(1, 1, 33, 80, 5, 12.5)
-                print("Dropped Ball in 5th Tour")
-                break
-
-            t_file = open("Sentences.txt", "a")
-            t_file.write(str(raunt))
-            t_file.close()
-            bool_raunt = False
-
-        if (not bool_raunt and get_dist(start_x,start_y,plane.location.global_frame.lat,plane.location.global_frame.lon)>=start_circle):
-            bool_raunt = True
-
+        try:
+            if (bool_raunt and get_dist(start_x,start_y,plane.location.global_frame.lat,plane.location.global_frame.lon)<=start_circle):
+                raunt+=1
+                tour_timer = time.time()
+                print(str(raunt))
+                if raunt==1:
+                    second_tour = time.time()
+    
+                elif raunt == 2:
+                    each_tour = time.time()-second_tour
+    
+    
+                elif raunt == 5:
+                    current_time = time.time()
+                    while time.time()-current_time<=(9*each_tour/20):
+                        print("Going through the target")
+    
+                    for i in range(5):
+                        servo_control(1, 1, 33, 80, 5, 12.5)
+                    print("Dropped Ball in 5th Tour")
+                    break
+    
+                t_file = open("Sentences.txt", "a")
+                t_file.write(str(raunt))
+                t_file.close()
+                bool_raunt = False
+    
+            if (not bool_raunt and get_dist(start_x,start_y,plane.location.global_frame.lat,plane.location.global_frame.lon)>=start_circle):
+                bool_raunt = True
+        except Exception as e:
+            print(e)
 
         success, img = cap.read()
         classIds, confs, bbox = net.detect(img, confThreshold=0.5)
