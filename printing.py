@@ -10,7 +10,7 @@ flight_time = 10  # minute
 photo_limit = 5
 wait_for_delete = 3  # second
 wait_for_fly = 10  # second
-drop_dist_initial = 30
+drop_dist_initial = 10
 quit_range_wait_time = 15  # second
 
 import serial
@@ -80,7 +80,8 @@ def drop_ball(person_gps_x, person_gps_y, current_x, current_y, vel):
     loc1 = (first_x, first_y)
     loc2 = (current_x, current_y)
     distance = (hs.haversine(loc1, loc2) * 1000)
-
+    
+    print("Distance = "+ str(distance)+ " Drop_Distance = "+ str(drop_distance) + " Initialized Drop Distance = "+ str(drop_dist_initial))
     if distance <= drop_dist_initial:
         print("Ball has just dropped")
         t_file = open("Sentences.txt", "a")
@@ -136,7 +137,7 @@ while (time.time() - start_time < flight_time * 60):
             cv2.imwrite("Serial_photo_" + str(serial_holder) + ".png", img)
             serial_photo_timer = time.time()
             serial_holder += 1
-    
+
         if time.time() - last_time >= wait_for_delete:
             i = 0
             print("i = 0")
@@ -164,10 +165,13 @@ while (time.time() - start_time < flight_time * 60):
                 found_time = time.time()
                 cv2.imwrite("finally.png", img)
                 photo_founded = True
+                print("Found a Person, GPS : " + str(first_x) + " " + str(first_y) + "\n")
+
 
             # cv2.imshow("Output",img)
             # cv2.waitKey(1)
         if photo_founded and time.time() - found_time() >= quit_range_wait_time:
+            print("Out of quit range, searching for cycle")
             drop_ball(first_x, first_y, plane.location.global_frame.lat, plane.location.global_frame.lon, 20)
 
 
