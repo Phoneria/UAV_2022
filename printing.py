@@ -170,7 +170,7 @@ while (time.time() - start_time < flight_time * 60):
 
             # cv2.imshow("Output",img)
             # cv2.waitKey(1)
-        if photo_founded and time.time() - found_time() >= quit_range_wait_time:
+        if photo_founded and time.time() - found_time >= quit_range_wait_time:
             print("Out of quit range, searching for cycle")
             drop_ball(first_x, first_y, plane.location.global_frame.lat, plane.location.global_frame.lon, 20)
 
