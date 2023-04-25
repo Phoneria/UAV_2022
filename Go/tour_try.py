@@ -6,13 +6,13 @@ from dronekit import connect
 
 t_file = open("Sentences.txt", "w")
 
-flight_time = 10  # minute
-photo_limit = 5
+flight_time = 3 # minute
+photo_limit = 2
 wait_for_delete = 3  # second
 wait_for_fly = 10  # second
-drop_dist_initial = 10
+drop_dist_initial = 10 # meter
 quit_range_wait_time = 15  # second
-raund_meter =20
+start_circle =  20 #meter
 
 import serial
 import RPi.GPIO as GPIO
@@ -44,6 +44,10 @@ time.sleep(wait_for_fly)
 t_file.write("Flying..." + "\n")
 print("Flying...")
 
+start_x = plane.location.global_frame.lat
+start_y = plane.location.global_frame.lon
+
+print(str(start_x) +" "+ str(start_y))
 
 def servo_control(repeat, sleep, pvm, freq, x1, x2):
     print("Servo is working ....")
@@ -68,7 +72,13 @@ def servo_control(repeat, sleep, pvm, freq, x1, x2):
         GPIO.cleanup()
 
 
-def drop_ball(person_gps_x, person_gps_y, current_x, current_y, vel):
+def get_dist(x1,y1,x2,y2):
+    location_1 = (x1, y1)
+    location_2 = (x2, y2)
+    return (hs.haversine(location_1, location_2) * 1000)
+
+
+def drop_ball(current_x, current_y, vel):
     print("Dropping Ball...")
 
     m, k, A, g = 0.18, 0.5, 0.1, 9.8
@@ -82,27 +92,25 @@ def drop_ball(person_gps_x, person_gps_y, current_x, current_y, vel):
     loc2 = (current_x, current_y)
     distance = (hs.haversine(loc1, loc2) * 1000)
 
-    print("Distance = "+ str(distance)+ " Drop_Distance = "+ str(drop_distance) + " Initialized Drop Distance = "+ str(drop_dist_initial))
+    print("Distance = " + str(distance) + " Drop_Distance = " + str(
+        drop_distance) + " Initialized Drop Distance = " + str(drop_dist_initial))
+
+    t_file = open("Sentences.txt", "a")
+    t_file.write("Distance = " + str(distance) + " Drop_Distance = " + str(
+        drop_distance) + " Initialized Drop Distance = " + str(drop_dist_initial))
+    t_file.close()
     if distance <= drop_dist_initial:
         print("Ball has just dropped")
         t_file = open("Sentences.txt", "a")
-        t_file.write(" ")
-        t_file.write(" V limit: " + str(v_lim) + "\n")
-        t_file.write(" Ball Drop Time: " + str(ball_drop_time) + "\n")
-        t_file.write(" Drop Distance: " + str(drop_distance) + "\n")
-        t_file.write(" Current_x: " + str(current_x) + "\n")
-        t_file.write(" Current_y: " + str(current_y) + "\n")
-        t_file.write(" Current_alt: " + str(plane.location.global_frame.alt) + "\n")
-        t_file.write(" person_gps_x: " + str(person_gps_x) + "\n")
-        t_file.write(" person_gps_y: " + str(person_gps_y) + "\n")
-        t_file.close()
-        servo_control(1, 1, 33, 80, 5, 12.5)
-        servo_control(1, 1, 32, 35, 12.5, 5)
+        t_file.write("Ball has just dropped")
 
-start_x = plane.location.global_frame.lat
-start_y = plane.location.global_frame.lon
-print("Start x : " + str(start_x))
-print("Start y : " + str(start_y))
+        t_file.close()
+        for i in range(5):
+            servo_control(1, 1, 33, 80, 5, 12.5)
+
+        return True
+
+
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
@@ -132,51 +140,65 @@ t_file.close()
 
 serial_photo_timer = time.time()
 serial_holder = 1
+is_it_over = False
 
-tour_timer =time.time()
-raund = 0
-diff_between_raunds = 0
-raund_time = 0
-second_raund_started =False
+
+raunt = 0
+bool_raunt =True
+tour_timer = time.time() # Start time of each raunt
+second_tour = 0
+each_tour = 0
+
 while (time.time() - start_time < flight_time * 60):
     try:
+        try:
+            if (bool_raunt and get_dist(start_x,start_y,plane.location.global_frame.lat,plane.location.global_frame.lon)<=start_circle):
+                raunt+=1
+                tour_timer = time.time()
+                print(str(raunt))
+                if raunt==2:
+                    second_tour = time.time()
+
+                elif raunt == 3:
+                    each_tour = time.time()-second_tour
+
+
+                elif raunt == 4:
+                    current_time = time.time()
+                    while time.time()-current_time<=(9*each_tour/20):
+                        if (time.time()-current_time>=2*60):
+                            break
+                        print("Going through the target")
+
+                    for i in range(5):
+                        servo_control(1, 1, 33, 80, 5, 12.5)
+                    print("Dropped Ball in 4th Tour")
+                    break
+
+                t_file = open("Sentences.txt", "a")
+                t_file.write(str(raunt))
+                t_file.close()
+                bool_raunt = False
+
+            if (not bool_raunt and get_dist(start_x,start_y,plane.location.global_frame.lat,plane.location.global_frame.lon)>=start_circle):
+                bool_raunt = True
+        except Exception as e:
+            print(e)
+
         success, img = cap.read()
         classIds, confs, bbox = net.detect(img, confThreshold=0.5)
-        try:
-
-            start_location = (start_x, start_y)
-            current_location = ( plane.location.global_frame.lat,plane.location.global_frame.lon)
-            difference = (hs.haversine(start_location, current_location) * 1000)
-
-            if (difference <=raund_meter and time.time()-tour_timer >= 10):
-                raund+=1
-                if raund==2 and not second_raund_started :
-                    diff_between_raunds = time.time()-tour_timer
-                    print("Difference Between Raunds " + str(diff_between_raunds))
-                    raund_time = time.time()
-                    second_raund_started = True
-                tour_timer = time.time()
-
-                print("Raund : "+ str(raund))
-
-            if raund ==3:
-                if (time.time()-raund_time >= 3*diff_between_raunds/2):
-                    print("Raund = 3, dropping balls")
-                    servo_control(1, 1, 33, 80, 5, 12.5)
-                    servo_control(1, 1, 32, 35, 12.5, 5)
-        except Exception as e:
-            print("Exception : " + e)
 
         if time.time() - serial_photo_timer >= 0.2:
             cv2.imwrite("Serial_photo_" + str(serial_holder) + ".png", img)
             serial_photo_timer = time.time()
             serial_holder += 1
-
+            print(str(serial_holder))
         if time.time() - last_time >= wait_for_delete:
             i = 0
             print("i = 0")
-        if len(classIds) != 0:
+        if not photo_founded and len(classIds) != 0:
             last_time = time.time()
+
 
             for classId, confidence, box in zip(classIds.flatten(), confs.flatten(), bbox):
                 img = cv2.rectangle(img, box, (0, 255, 0), thickness=2)
@@ -202,15 +224,58 @@ while (time.time() - start_time < flight_time * 60):
                 print("Found a Person, GPS : " + str(first_x) + " " + str(first_y) + "\n")
 
 
-            # cv2.imshow("Output",img)
-            # cv2.waitKey(1)
-        if photo_founded and time.time() - found_time() >= quit_range_wait_time:
+
+        if photo_founded and (time.time() - found_time) >= quit_range_wait_time:
             print("Out of quit range, searching for cycle")
-            drop_ball(first_x, first_y, plane.location.global_frame.lat, plane.location.global_frame.lon, 20)
+            while True:
+                if(drop_ball(plane.location.global_frame.lat, plane.location.global_frame.lon, 20)):
+                    is_it_over = True
+                    break
 
-
-
-
+        if is_it_over:
+            break
 
     except Exception as e:
-        pass
+        print(e)
+
+for i in range(5):
+    servo_control(1, 1, 33, 80, 5, 12.5)
+
+
+"""
+Rahmân ve Rahîm olan Allah'ın adıyla.
+
+Necm39-42: Şüphesiz insana kendi emeğinden başkası yoktur.
+
+Şüphesiz onun çalışması ileride görülecektir.
+
+Sonra çalışmasının karşılığı kendisine tastamam verilecektir.
+
+Şüphesiz en son varış Rabbinedir
+
+
+Bakara 255: Allah'tan başka hiçbir İlah yoktur. O, daima yaşayan, daima duran,
+
+bütün varlıkları ayakta tutandır. O'nu ne gaflet basar, ne de uyku.
+
+Göklerdeki ve yerdeki herşey O'nundur. O'nun izni olmadan huzurunda şefaat etmek kimin haddine!
+
+Onların önlerinde ve arkalarında ne varsa hepsini bilir.
+
+Onlar ise, O'nun dilediği kadarından başka ilminden hiçbir şey kavrayamazlar.
+
+O'nun hükümdarlığı, bütün gökleri ve yeri kucaklamıştır. Her ikisini görüp gözetmek,
+
+ona bir ağırlık da vermez. O, çok yüce, çok büyüktür.
+
+
+"""
+
+
+
+
+
+
+
+
+
