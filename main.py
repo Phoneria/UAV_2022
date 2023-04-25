@@ -239,8 +239,6 @@ while (time.time() - start_time < flight_time * 60):
     except Exception as e:
         print(e)
 
-for i in range(5):
-    servo_control(1, 1, 33, 80, 5, 12.5)
 
 
 """
