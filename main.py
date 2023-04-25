@@ -148,7 +148,7 @@ tour_timer = time.time() # Start time of each raunt
 second_tour = 0
 each_tour = 0
 
-while (time.time() - start_time < flight_time * 60):
+while (time.time() - start_time < flight_time * 60 and raunt < 5):
     try:
         try:
             if (bool_raunt and get_dist(start_x,start_y,plane.location.global_frame.lat,plane.location.global_frame.lon)<=start_circle):
@@ -169,10 +169,7 @@ while (time.time() - start_time < flight_time * 60):
                             break
                         print("Going through the target")
 
-                    for i in range(5):
-                        servo_control(1, 1, 33, 80, 5, 12.5)
-                    print("Dropped Ball in 4th Tour")
-                    break
+     
 
                 t_file = open("Sentences.txt", "a")
                 t_file.write(str(raunt))
@@ -268,7 +265,6 @@ ona bir ağırlık da vermez. O, çok yüce, çok büyüktür.
 
 
 """
-
 
 
 
