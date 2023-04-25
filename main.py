@@ -7,7 +7,7 @@ from dronekit import connect
 t_file = open("Sentences.txt", "w")
 
 flight_time = 3 # minute
-photo_limit = 2 
+photo_limit = 2
 wait_for_delete = 3  # second
 wait_for_fly = 10  # second
 drop_dist_initial = 10 # meter
@@ -46,6 +46,8 @@ print("Flying...")
 
 start_x = plane.location.global_frame.lat
 start_y = plane.location.global_frame.lon
+
+print(str(start_x) +" "+ str(start_y))
 
 def servo_control(repeat, sleep, pvm, freq, x1, x2):
     print("Servo is working ....")
@@ -154,28 +156,30 @@ while (time.time() - start_time < flight_time * 60):
                 raunt+=1
                 tour_timer = time.time()
                 print(str(raunt))
-                if raunt==1:
+                if raunt==2:
                     second_tour = time.time()
-    
-                elif raunt == 2:
+
+                elif raunt == 3:
                     each_tour = time.time()-second_tour
-    
-    
-                elif raunt == 5:
+
+
+                elif raunt == 4:
                     current_time = time.time()
                     while time.time()-current_time<=(9*each_tour/20):
+                        if (time.time()-current_time>=2*60):
+                            break
                         print("Going through the target")
-    
+
                     for i in range(5):
                         servo_control(1, 1, 33, 80, 5, 12.5)
-                    print("Dropped Ball in 5th Tour")
+                    print("Dropped Ball in 4th Tour")
                     break
-    
+
                 t_file = open("Sentences.txt", "a")
                 t_file.write(str(raunt))
                 t_file.close()
                 bool_raunt = False
-    
+
             if (not bool_raunt and get_dist(start_x,start_y,plane.location.global_frame.lat,plane.location.global_frame.lon)>=start_circle):
                 bool_raunt = True
         except Exception as e:
@@ -189,11 +193,11 @@ while (time.time() - start_time < flight_time * 60):
             serial_photo_timer = time.time()
             serial_holder += 1
             print(str(serial_holder))
-
         if time.time() - last_time >= wait_for_delete:
             i = 0
             print("i = 0")
         if not photo_founded and len(classIds) != 0:
+
             last_time = time.time()
 
 
@@ -264,65 +268,6 @@ Onlar ise, O'nun dilediği kadarından başka ilminden hiçbir şey kavrayamazla
 O'nun hükümdarlığı, bütün gökleri ve yeri kucaklamıştır. Her ikisini görüp gözetmek,
 
 ona bir ağırlık da vermez. O, çok yüce, çok büyüktür.
-
-Fetih Suresi :
-. Şüphesiz biz sana apaçık bir fetih verdik.(1)
-
-(1) Âyetteki "fetih" ile daha sonra gerçekleşecek Mekke fethi kastedilmektedir. Ayrıca sûrenin inmesinden önce gerçekleşen ve Mekke fethine zemin hazırlamış olan Hudeybiye barışının kastedilmiş olması da mümkündür.
-2,3. Ta ki Allah, senin geçmiş ve gelecek günahlarını bağışlasın, sana olan nimetini tamamlasın, seni doğru yola iletsin ve Allah sana, şanlı bir zaferle yardım etsin.
-
-4. O, inananların imanlarını kat kat artırmaları için kalplerine huzur ve güven indirendir. Göklerin ve yerin orduları Allah'ındır. Allah, hakkıyla bilendir, hüküm ve hikmet sahibidir.
-
-5. Bütün bunlar Allah'ın; inanan erkek ve kadınları, içlerinden ırmaklar akan, içinde temelli kalacakları cennetlere koyması, onların kötülüklerini örtmesi içindir. İşte bu, Allah katında büyük bir başarıdır.
-
-6. Bir de, Allah'ın, hakkında kötü zanda bulunan münafık erkeklere ve münafık kadınlara, Allah'a ortak koşan erkeklere ve Allah'a ortak koşan kadınlara azap etmesi içindir. Kötülük girdabı onların başına olsun! Allah onlara gazap etmiş, onları lânetlemiş ve kendilerine cehennemi hazırlamıştır. Orası ne kötü bir varış yeridir!
-
-7. Göklerin ve yerin orduları Allah'ındır. Allah, mutlak güç sahibidir, hüküm ve hikmet sahibidir.
-
-8. (Ey Muhammed!) Şüphesiz biz seni bir şâhit, bir müjdeci ve bir uyarıcı olarak gönderdik.
-
-9. Ey insanlar! Allah'a ve Peygamberine inanasınız, ona yardım edesiniz, ona saygı gösteresiniz ve sabah akşam Allah'ı tespih edesiniz diye (Peygamber'i gönderdik.)
-
-10. Sana bîat edenler ancak Allah'a bîat etmiş olurlar.(2) Allah'ın eli onların ellerinin üzerindedir. Verdiği sözden dönen kendi aleyhine dönmüş olur. Allah'a verdiği sözü yerine getirene, Allah büyük bir mükâfat verecektir.
-
-(2) "Bîat", el tutuşup söz vermek demektir. Âyette, Hudeybiye'de müslümanların, Hz. Peygamber'e bağlılık göstereceklerine, gerektiğinde onunla birlikte savaşacaklarına dair söz vermeleri kastedilmektedir. Bu olay, İslâm tarihinde "Bey'atu'r-Rıdvan" diye anılır.
-11. Bedevîlerin (savaştan) geri bırakılanları sana, "Bizi mallarımız ve ailelerimiz alıkoydu; Allah'tan bizim için af dile" diyecekler. Onlar kalplerinde olmayanı dilleriyle söylerler. De ki: "Allah, sizin bir zarara uğramanızı dilerse, yahut bir yarar elde etmenizi dilerse, O'na karşı kimin bir şeye gücü yeter? Hayır, Allah, yaptıklarınızdan haberdardır."
-
-12. (Ey münafıklar!) Siz aslında, Peygamberin ve inananların bir daha ailelerine geri dönmeyeceklerini sanmıştınız. Bu, sizin gönüllerinize güzel gösterildi de kötü zanda bulundunuz ve helâki hak eden bir kavim oldunuz.
-
-13. Kim Allah'a ve Peygambere inanmazsa bilsin ki, şüphesiz biz, inkârcılar için alevli bir ateş hazırladık.
-
-14. Göklerin ve yerin hükümranlığı Allah'ındır. O, dilediğini bağışlar, dilediğine ceza verir. Allah, çok bağışlayandır, çok merhamet edendir.
-
-15. Savaştan geri bırakılanlar, siz ganimetleri almaya giderken, "Bırakın biz de sizinle gelelim" diyeceklerdir. Onlar Allah'ın sözünü değiştirmek isterler. De ki: "Siz bizimle asla gelmeyeceksiniz. Allah, önceden böyle buyurmuştur." Onlar, "Bizi kıskanıyorsunuz" diyeceklerdir. Hayır, onlar pek az anlarlar.
-
-16. Bedevîlerin (savaştan) geri bırakılanlarına de ki: "Siz, güçlü kuvvetli bir kavme karşı teslim oluncaya kadar savaşmaya çağrılacaksınız. Eğer itaat ederseniz, Allah size güzel bir mükâfat verir. Ama önceden döndüğünüz gibi yine dönerseniz, Allah sizi elem dolu bir azaba uğratır."
-
-17. Köre güçlük yoktur, topala güçlük yoktur, hastaya güçlük yoktur. (Bunlar savaşa katılmak zorunda değillerdir.) Kim Allah'a ve Peygamberine itaat ederse, Allah onu, içlerinden ırmaklar akan cennetlere koyar. Kim de yüz çevirirse, onu elem dolu bir azaba uğratır.
-
-18,19. Şüphesiz Allah, ağaç altında sana bîat ederlerken inananlardan hoşnut olmuştur. Gönüllerinde olanı bilmiş, onlara huzur, güven duygusu vermiş ve onlara yakın bir fetih(3) ve elde edecekleri birçok ganimetler nasip etmiştir. Allah mutlak güç sahibidir, hüküm ve hikmet sahibidir.
-
-(3) Âyette sözü edilen fetih, Hudeybiye barışından hemen sonra gerçekleşen Hayber'in fethi olayıdır. Daha sonraki âyetlerde sözü edilen ganimetler de burada elde edilen ganimetlerdir.
-20. Allah, size, elde edeceğiniz birçok ganimetler vaad etmiştir. Şimdilik bunu size hemen vermiş ve insanların ellerini sizden çekmiştir. (Allah, böyle yaptı) ki, bunlar mü'minler için bir delil olsun, sizi de doğru bir yola iletsin.
-
-21. Henüz elde edemediğiniz, fakat Allah'ın, ilmiyle kuşattığı başka (kazançlar) da vardır. Allah, her şeye hakkıyla gücü yetendir.
-
-22. İnkâr edenler sizinle savaşsalardı, arkalarını dönüp kaçarlar, sonra da ne bir dost, ne de bir yardımcı bulabilirlerdi.
-
-23. Allah'ın öteden beri işleyip duran kanunu (budur). Allah'ın kanununda asla bir değişiklik bulamazsın.
-
-24. O, Mekke'nin göbeğinde, sizi onlara karşı üstün kıldıktan sonra, onların ellerini sizden, sizin ellerinizi onlardan çekendir. Allah, yaptıklarınızı hakkıyla görmektedir.
-
-25. Onlar, inkâr edenler ve sizi Mescid-i Haram'ı ziyaretten ve (ibadet amacıyla) bekletilen kurbanlıkları yerlerine ulaşmaktan alıkoyanlardır. Eğer, oradaki henüz tanımadığınız inanmış erkeklerle, inanmış kadınları bilmeyerek ezmeniz ve böylece size bir eziyet gelecek olmasaydı, (Allah, Mekke'ye girmenize izin verirdi). Allah, dilediğini rahmetine koymak için böyle yapmıştır. Eğer, inananlarla inkârcılar birbirinden ayrılmış olsalardı, onlardan inkâr edenleri elem dolu bir azaba uğratırdık.
-
-26. Hani inkâr edenler kalplerine taassubu, cahiliye taassubunu yerleştirmişlerdi. Allah ise, Peygamberine ve inananlara huzur ve güvenini indirmiş ve onların takva (Allah'a karşı gelmekten sakınma) sözünü tutmalarını sağlamıştı. Zaten onlar buna lâyık ve ehil idiler. Allah, her şeyi hakkıyla bilmektedir.
-
-27. Andolsun, Allah, Peygamberinin rüyasını doğru çıkardı. Allah dilerse, siz güven içinde başlarınızı kazıtmış veya saçlarınızı kısaltmış olarak, korkmadan Mescid-i Haram'a gireceksiniz. Allah, sizin bilmediğinizi bildi ve size bundan başka yakın bir fetih daha verdi.(4)
-
-(4) Âyette sözü edilen "yakın fetih" Mekke fethinden önce gerçekleşen Hayber fethi veya Hudeybiye barışıdır. Hudeybiye barışının fetih diye nitelenmesi, İslâm adına önemli açılımlar sağlamış olması sebebiyledir.
-28. O, Peygamberini hidayet ve hak din ile gönderendir. (Allah) o hak dini bütün dinlere üstün kılmak için (böyle yaptı). Şahit olarak Allah yeter.
-
-29. Muhammed, Allah'ın Resûlüdür. Onunla beraber olanlar, inkârcılara karşı çetin, birbirlerine karşı da merhametlidirler. Onların, rükû ve secde hâlinde, Allah'tan lütuf ve hoşnutluk istediklerini görürsün. Onların secde eseri olan alametleri yüzlerindedir. İşte bu, onların Tevrat'ta ve İncil'de anlatılan durumlarıdır: Onlar filizini çıkarmış, onu kuvvetlendirmiş, kalınlaşmış, gövdesi üzerine dikilmiş, ziraatçıların hoşuna giden bir ekin gibidirler. Allah, kendileri sebebiyle inkârcıları öfkelendirmek için onları böyle sağlam ve dirençli kılar. Allah, içlerinden iman edip salih amel işleyenlere bir bağışlama ve büyük bir mükâfat vaad etmiştir.
 
 
 """
