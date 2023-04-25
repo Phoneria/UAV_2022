@@ -10,7 +10,6 @@ flight_time = 3 # minute
 photo_limit = 2
 wait_for_delete = 3  # second
 wait_for_fly = 10  # second
-drop_dist_initial = 10 # meter
 quit_range_wait_time = 15  # second
 start_circle =  20 #meter
 
@@ -93,13 +92,13 @@ def drop_ball(current_x, current_y, vel):
     distance = (hs.haversine(loc1, loc2) * 1000)
 
     print("Distance = " + str(distance) + " Drop_Distance = " + str(
-        drop_distance) + " Initialized Drop Distance = " + str(drop_dist_initial))
+        drop_distance) )
 
     t_file = open("Sentences.txt", "a")
     t_file.write("Distance = " + str(distance) + " Drop_Distance = " + str(
-        drop_distance) + " Initialized Drop Distance = " + str(drop_dist_initial))
+        drop_distance) )
     t_file.close()
-    if distance <= drop_dist_initial:
+    if distance <= distance:
         print("Ball has just dropped")
         t_file = open("Sentences.txt", "a")
         t_file.write("Ball has just dropped")
